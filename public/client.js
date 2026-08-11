@@ -62,6 +62,15 @@ function doJoin(name, tableId, isAutoReconnect) {
   });
 }
 
+// Khi tự động vào lại bàn sau F5 (không qua nút "Vào bàn"), trình duyệt vẫn
+// chặn âm thanh cho tới cử chỉ đầu tiên của người dùng -> mở khoá + bật nhạc
+// nền ở lần bấm/chạm đầu tiên bất kỳ trên trang.
+document.addEventListener('click', () => {
+  Sound.unlock();
+  Music.unlock();
+  if (!Music.isMuted()) Music.start();
+}, { once: true });
+
 socket.on('connect', () => {
   mySocketId = socket.id;
   // Nếu đã có tên/bàn lưu sẵn (do F5 làm mới trang, mất mạng rồi có lại, hay
@@ -75,7 +84,11 @@ socket.on('connect', () => {
 // ---------- Đăng nhập vào bàn ----------
 
 joinBtn.addEventListener('click', () => {
-  Sound.unlock(); // mở khoá AudioContext ngay từ cử chỉ đầu tiên của người dùng
+  // Mở khoá AudioContext ngay từ cử chỉ đầu tiên của người dùng (bắt buộc với
+  // hầu hết trình duyệt), rồi bật nhạc nền jazz nếu người dùng chưa từng tắt.
+  Sound.unlock();
+  Music.unlock();
+  if (!Music.isMuted()) Music.start();
   const name = nameInput.value.trim();
   const tableId = tableInput.value.trim() || 'ban-1';
   if (!name) {
@@ -163,7 +176,18 @@ function cardEl(card, sizeClass, animate) {
   } else {
     const isRed = card.suit === '♥' || card.suit === '♦';
     div.className = `card ${isRed ? 'red' : 'black'} ${sizeClass || ''}`;
-    div.textContent = `${card.rank}${card.suit}`;
+    if (sizeClass === 'mini') {
+      // Bài mini (bài của người khác) quá nhỏ để tách góc, hiển thị gọn ở giữa
+      div.textContent = `${card.rank}${card.suit}`;
+    } else {
+      // Bài cỡ thường/lớn: bố cục kiểu bài luxury cổ điển — hạng+chất ở 2 góc
+      // đối xứng, chất bài lớn mờ làm nền watermark ở giữa.
+      const corner = `<span class="card-rank">${card.rank}</span><span class="card-suit-mini">${card.suit}</span>`;
+      div.innerHTML =
+        `<span class="card-corner tl">${corner}</span>` +
+        `<span class="card-suit-center">${card.suit}</span>` +
+        `<span class="card-corner br">${corner}</span>`;
+    }
   }
   if (animate) {
     div.classList.add('deal-in');
@@ -466,6 +490,17 @@ updateSoundBtn();
 soundToggleBtn.addEventListener('click', () => {
   Sound.setMuted(!Sound.isMuted());
   updateSoundBtn();
+});
+
+const musicToggleBtn = el('music-toggle-btn');
+function updateMusicBtn() {
+  musicToggleBtn.textContent = Music.isMuted() ? '🔇' : '🎵';
+}
+updateMusicBtn();
+musicToggleBtn.addEventListener('click', () => {
+  Music.unlock();
+  Music.setMuted(!Music.isMuted());
+  updateMusicBtn();
 });
 
 // ---------- Lịch sử ván đấu ----------

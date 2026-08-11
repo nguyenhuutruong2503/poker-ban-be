@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;800&family=Nunito:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Baloo+2:wght@500;600;800&family=Nunito:wght@400;600;700&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -16,7 +16,10 @@
   --accent-purple: #9b5de5;
   --ink: #f2e9d8;
   --ink-dark: #1a1410;
-  --card-white: #fffdf8;
+  --card-navy: #0d1220;
+  --card-navy-light: #1b2340;
+  --card-red: #e2536f;
+  --card-black: #e7e0cf;
   --panel: #12201a;
   --panel-light: #1b2f26;
   --danger: #ff5c5c;
@@ -248,9 +251,10 @@ h1, h2 {
   margin-bottom: 2px;
 }
 
-.pixel-avatar {
-  border-radius: 8px;
-  box-shadow: 0 0 0 2px var(--gold-dark), 0 2px 6px rgba(0, 0, 0, 0.5);
+.avatar-orb {
+  border-radius: 50%;
+  display: block;
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.55));
 }
 
 .seat-name-tag {
@@ -354,28 +358,100 @@ h1, h2 {
 /* ---------- Lá bài ---------- */
 
 .card {
+  position: relative;
   width: 40px;
   height: 56px;
-  background: var(--card-white);
+  background: radial-gradient(circle at 28% 18%, var(--card-navy-light) 0%, var(--card-navy) 70%);
   border-radius: 6px;
+  border: 1px solid var(--gold-dark);
+  overflow: hidden;
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(212, 175, 55, 0.35),
+    inset 0 0 10px rgba(212, 175, 55, 0.06);
+}
+
+.card.mini {
+  width: 24px;
+  height: 34px;
+  font-size: 10px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(212, 175, 55, 0.4);
+  font-family: 'Cinzel', serif;
 }
 
-.card.mini { width: 24px; height: 34px; font-size: 10px; border-radius: 4px; }
+.card.red { color: var(--card-red); }
+.card.black { color: var(--card-black); }
 
-.card.red { color: var(--danger); }
-.card.black { color: var(--ink-dark); }
+/* Góc trên-trái + góc dưới-phải: hạng bài + chất bài nhỏ, kiểu bài luxury cổ điển */
+.card-corner {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 11px;
+}
+.card-corner.tl { top: 4px; left: 4px; }
+.card-corner.br { bottom: 4px; right: 4px; transform: rotate(180deg); }
+.card-suit-mini { font-size: 9px; margin-top: 1px; }
+
+/* Chất bài lớn ở giữa, mờ, làm nền watermark sang trọng */
+.card-suit-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  opacity: 0.4;
+  text-shadow: 0 0 8px currentColor;
+}
+
+.my-cards .card .card-corner { font-size: 15px; }
+.my-cards .card .card-suit-mini { font-size: 12px; }
+.my-cards .card .card-suit-center { font-size: 32px; }
+
+/* Ánh sáng lướt qua lá bài khi hover, tạo cảm giác foil sang trọng */
+.card:not(.back)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.22) 45%, transparent 62%);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+.card:not(.back):hover::before {
+  animation: card-shine 0.8s ease;
+}
+@keyframes card-shine {
+  to { transform: translateX(120%); }
+}
 
 .card.back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background:
-    repeating-linear-gradient(45deg, var(--wine), var(--wine) 4px, #5a1620 4px, #5a1620 8px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 0 0 2px var(--gold-dark);
+    repeating-linear-gradient(45deg, var(--card-navy) 0 6px, var(--card-navy-light) 6px 12px),
+    radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.18), transparent 70%);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.55), inset 0 0 0 2px rgba(212, 175, 55, 0.55);
 }
+.card.back::after {
+  content: '♦';
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  opacity: 0.6;
+}
+.card.mini.back::after { font-size: 10px; }
+.my-cards .card.back::after { font-size: 22px; }
 
 /* Bài chia ra bay từ tâm bàn vào vị trí */
 @keyframes deal-in {
@@ -519,7 +595,7 @@ h1, h2 {
   margin-bottom: 6px;
 }
 
-.chat-box .chat-line .pixel-avatar { flex-shrink: 0; width: 18px; height: 18px; border-radius: 4px; }
+.chat-box .chat-line .avatar-orb { flex-shrink: 0; width: 18px; height: 18px; }
 .chat-box .chat-name { font-weight: 800; color: var(--gold); }
 .chat-box .chat-text { color: var(--ink); word-break: break-word; }
 
