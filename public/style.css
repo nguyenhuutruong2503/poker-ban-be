@@ -3,22 +3,29 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #FFF3E0;
-  --felt: #1FA37E;
-  --felt-dark: #158066;
-  --accent-pink: #FF5C8A;
-  --accent-yellow: #FFC93C;
-  --accent-blue: #3D9BFF;
-  --accent-purple: #9B5DE5;
-  --ink: #2A2A2E;
-  --card-white: #FFFDF8;
-  --danger: #FF5C5C;
-  --success: #34C77B;
+  --bg: #0a0f0c;
+  --felt: #0f5c3f;
+  --felt-dark: #062a1c;
+  --gold: #d4af37;
+  --gold-light: #fceabb;
+  --gold-dark: #9c7a1f;
+  --wine: #7a1f2b;
+  --accent-pink: #e0507a;
+  --accent-yellow: #ffc93c;
+  --accent-blue: #3d9bff;
+  --accent-purple: #9b5de5;
+  --ink: #f2e9d8;
+  --ink-dark: #1a1410;
+  --card-white: #fffdf8;
+  --panel: #12201a;
+  --panel-light: #1b2f26;
+  --danger: #ff5c5c;
+  --success: #34c77b;
 }
 
 body {
   font-family: 'Nunito', sans-serif;
-  background: var(--bg);
+  background: radial-gradient(circle at 50% -10%, #143a2c 0%, var(--bg) 65%);
   color: var(--ink);
   min-height: 100vh;
 }
@@ -36,27 +43,31 @@ h1, h2 {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at top, #FFE8B8, var(--bg));
+  background:
+    radial-gradient(circle at top, rgba(212, 175, 55, 0.12), transparent 55%),
+    radial-gradient(circle at 50% 100%, #143a2c 0%, var(--bg) 70%);
 }
 
 .login-card {
-  background: var(--card-white);
+  background: linear-gradient(180deg, var(--panel-light), var(--panel));
   border-radius: 24px;
   padding: 36px 32px;
   width: 360px;
   max-width: 90vw;
-  box-shadow: 0 12px 0 var(--accent-yellow), 0 12px 30px rgba(0,0,0,0.15);
+  border: 2px solid var(--gold-dark);
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.25), 0 16px 40px rgba(0, 0, 0, 0.55);
   text-align: center;
 }
 
 .login-card h1 {
   font-size: 28px;
-  color: var(--felt-dark);
+  color: var(--gold);
   margin-bottom: 4px;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 .subtitle {
-  color: #6b6b6b;
+  color: #b9ac95;
   font-size: 14px;
   margin-bottom: 20px;
 }
@@ -67,26 +78,28 @@ h1, h2 {
   font-weight: 700;
   font-size: 13px;
   margin: 12px 0 6px;
-  color: var(--felt-dark);
+  color: var(--gold-light);
 }
 
 .login-card input {
   width: 100%;
   padding: 12px 14px;
   border-radius: 14px;
-  border: 2px solid #FFE0A3;
+  border: 2px solid #3a3223;
+  background: #0d1712;
+  color: var(--ink);
   font-size: 15px;
   font-family: 'Nunito', sans-serif;
   outline: none;
 }
 
 .login-card input:focus {
-  border-color: var(--accent-pink);
+  border-color: var(--gold);
 }
 
 .hint {
   font-size: 12px;
-  color: #999;
+  color: #8c8672;
   margin-top: 6px;
   text-align: left;
 }
@@ -104,28 +117,29 @@ h1, h2 {
   padding: 14px;
   border: none;
   border-radius: 16px;
-  background: var(--accent-pink);
-  color: white;
+  background: linear-gradient(180deg, var(--gold-light), var(--gold));
+  color: #3a2a08;
   font-family: 'Baloo 2', sans-serif;
   font-size: 17px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 5px 0 #C93D66;
+  box-shadow: 0 5px 0 var(--gold-dark), 0 8px 18px rgba(0, 0, 0, 0.4);
   transition: transform 0.08s ease;
 }
-.btn-primary:active { transform: translateY(3px); box-shadow: 0 2px 0 #C93D66; }
+.btn-primary:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--gold-dark); }
 
 .btn-ghost {
   margin-top: 12px;
-  background: none;
-  border: 2px solid var(--felt);
-  color: var(--felt-dark);
+  background: rgba(212, 175, 55, 0.08);
+  border: 2px solid var(--gold-dark);
+  color: var(--gold-light);
   padding: 10px 16px;
   border-radius: 14px;
   font-weight: 700;
   cursor: pointer;
   font-family: 'Nunito', sans-serif;
 }
+.btn-ghost:hover { background: rgba(212, 175, 55, 0.18); }
 .btn-ghost.small { padding: 6px 12px; font-size: 13px; margin-top: 0; }
 
 /* ---------- Màn hình bàn chơi ---------- */
@@ -140,6 +154,7 @@ h1, h2 {
 .topbar {
   display: flex;
   align-items: center;
+  gap: 8px;
   justify-content: space-between;
   margin-bottom: 12px;
 }
@@ -147,12 +162,12 @@ h1, h2 {
 .table-label {
   font-family: 'Baloo 2', sans-serif;
   font-weight: 700;
-  color: var(--felt-dark);
+  color: var(--gold);
 }
 
 .last-message {
   font-size: 13px;
-  color: #6b6b6b;
+  color: #b9ac95;
   flex: 1;
   text-align: center;
 }
@@ -167,10 +182,18 @@ h1, h2 {
   position: relative;
   width: min(700px, 92vw);
   height: min(400px, 60vw);
-  background: radial-gradient(ellipse at center, var(--felt), var(--felt-dark));
+  background:
+    radial-gradient(ellipse at center, var(--felt) 0%, var(--felt-dark) 100%);
   border-radius: 200px;
-  border: 10px solid #7A4A21;
-  box-shadow: 0 10px 0 #5C3616, inset 0 0 40px rgba(0,0,0,0.25);
+  border: 10px solid var(--gold-dark);
+  outline: 3px solid rgba(252, 234, 187, 0.5);
+  outline-offset: -16px;
+  box-shadow:
+    0 0 0 4px #1a1410,
+    0 14px 0 #4a3512,
+    0 20px 40px rgba(0, 0, 0, 0.6),
+    inset 0 0 60px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 2px rgba(212, 175, 55, 0.3);
 }
 
 .pot-area {
@@ -178,17 +201,27 @@ h1, h2 {
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  color: white;
+  color: var(--gold-light);
 }
 
 .pot-amount {
   font-family: 'Baloo 2', sans-serif;
   font-weight: 700;
-  background: rgba(0,0,0,0.25);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(212, 175, 55, 0.5);
   padding: 6px 16px;
   border-radius: 20px;
   display: inline-block;
   margin-bottom: 10px;
+  transition: transform 0.15s ease;
+}
+
+.pot-amount.pulse { animation: pot-pulse 0.35s ease; }
+
+@keyframes pot-pulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.18); }
+  100% { transform: scale(1); }
 }
 
 .community-cards {
@@ -209,52 +242,69 @@ h1, h2 {
   transform: translate(-50%, -50%);
 }
 
+.seat-avatar-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
+.pixel-avatar {
+  border-radius: 8px;
+  box-shadow: 0 0 0 2px var(--gold-dark), 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
 .seat-name-tag {
-  background: white;
+  background: var(--panel-light);
+  color: var(--ink);
+  border: 1px solid var(--gold-dark);
   border-radius: 14px;
   padding: 4px 10px;
   font-weight: 700;
   font-size: 13px;
   display: inline-block;
-  box-shadow: 0 3px 0 rgba(0,0,0,0.15);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
 }
 
 .seat.active .seat-name-tag {
-  background: var(--accent-yellow);
-  box-shadow: 0 0 0 3px white, 0 3px 0 rgba(0,0,0,0.15);
+  background: linear-gradient(180deg, var(--gold-light), var(--gold));
+  color: var(--ink-dark);
+  box-shadow: 0 0 0 3px rgba(252, 234, 187, 0.5), 0 3px 0 rgba(0, 0, 0, 0.35);
 }
 
 .seat.folded .seat-name-tag { opacity: 0.4; }
 
 .seat-chips {
   font-size: 12px;
-  color: white;
+  color: var(--gold-light);
   font-weight: 700;
   margin-top: 2px;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 .seat-bet {
   font-size: 11px;
-  background: var(--accent-blue);
   color: white;
   border-radius: 10px;
   padding: 1px 8px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   margin-top: 3px;
+  background: rgba(0, 0, 0, 0.35);
 }
 
 .dealer-chip {
   position: absolute;
   top: -8px; right: -4px;
-  background: white;
-  border: 2px solid var(--accent-purple);
-  color: var(--accent-purple);
+  background: radial-gradient(circle at 35% 30%, #fff, var(--gold-light) 45%, var(--gold) 100%);
+  border: 2px solid var(--gold-dark);
+  color: #3a2a08;
   font-size: 10px;
   font-weight: 800;
   border-radius: 50%;
   width: 20px; height: 20px;
   display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .mini-cards {
@@ -262,6 +312,43 @@ h1, h2 {
   gap: 3px;
   justify-content: center;
   margin-top: 4px;
+}
+
+/* ---------- Chip 3D (dùng cho cược, pot, chip bay) ---------- */
+
+.poker-chip {
+  --chip-color: var(--accent-pink);
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.85), transparent 45%),
+    repeating-conic-gradient(var(--chip-color) 0deg 20deg, #fff 20deg 25deg);
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.35),
+    0 2px 3px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.poker-chip.big {
+  width: 34px;
+  height: 34px;
+}
+
+.flying-chip {
+  position: fixed;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.9), transparent 45%),
+    repeating-conic-gradient(var(--accent-yellow) 0deg 20deg, #fff 20deg 25deg);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5);
+  z-index: 80;
+  pointer-events: none;
+  transition: left 0.5s cubic-bezier(0.3, 0, 0.4, 1), top 0.5s cubic-bezier(0.3, 0, 0.4, 1), opacity 0.5s ease 0.3s, transform 0.5s ease;
 }
 
 /* ---------- Lá bài ---------- */
@@ -276,17 +363,60 @@ h1, h2 {
   justify-content: center;
   font-weight: 800;
   font-size: 15px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(212, 175, 55, 0.4);
 }
 
 .card.mini { width: 24px; height: 34px; font-size: 10px; border-radius: 4px; }
 
 .card.red { color: var(--danger); }
-.card.black { color: var(--ink); }
+.card.black { color: var(--ink-dark); }
 
 .card.back {
-  background: repeating-linear-gradient(45deg, var(--accent-purple), var(--accent-purple) 4px, #7A3FC2 4px, #7A3FC2 8px);
+  background:
+    repeating-linear-gradient(45deg, var(--wine), var(--wine) 4px, #5a1620 4px, #5a1620 8px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), inset 0 0 0 2px var(--gold-dark);
 }
+
+/* Bài chia ra bay từ tâm bàn vào vị trí */
+@keyframes deal-in {
+  from { transform: translate(var(--deal-dx, 0), var(--deal-dy, 0)) scale(0.4); opacity: 0; }
+  to { transform: translate(0, 0) scale(1); opacity: 1; }
+}
+
+.card.deal-in {
+  animation: deal-in 0.35s cubic-bezier(0.2, 0.6, 0.3, 1) both;
+}
+
+/* Bài chung: cấu trúc lật 3D (mặt sau -> mặt trước) */
+.flip-card {
+  width: 40px;
+  height: 56px;
+  perspective: 300px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.3, 0.1, 0.2, 1);
+}
+
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+}
+
+.flip-card-face.front {
+  transform: rotateY(180deg);
+}
+
+.flip-card .card { width: 100%; height: 100%; }
 
 /* ---------- Vùng bài của bản thân + hành động ---------- */
 
@@ -307,14 +437,15 @@ h1, h2 {
 .timer-bar-wrap {
   width: min(400px, 90vw);
   height: 8px;
-  background: #eee;
+  background: #241a10;
+  border: 1px solid var(--gold-dark);
   border-radius: 6px;
   overflow: hidden;
 }
 
 .timer-bar {
   height: 100%;
-  background: var(--accent-yellow);
+  background: linear-gradient(90deg, var(--gold), var(--accent-yellow));
   width: 100%;
   transition: width 0.2s linear;
 }
@@ -335,7 +466,7 @@ h1, h2 {
   font-size: 14px;
   color: white;
   cursor: pointer;
-  box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(212, 175, 55, 0.3);
 }
 .btn-action:active { transform: translateY(3px); box-shadow: none; }
 
@@ -353,12 +484,14 @@ h1, h2 {
 .raise-input {
   width: 90px;
   border-radius: 12px;
-  border: 2px solid #ddd;
+  border: 2px solid var(--gold-dark);
+  background: #0d1712;
+  color: var(--ink);
   padding: 0 10px;
   font-size: 14px;
 }
 
-/* ---------- Chat ---------- */
+/* ---------- Chat + emoji + avatar ---------- */
 
 .side-panel {
   position: fixed;
@@ -369,17 +502,50 @@ h1, h2 {
 }
 
 .chat-box {
-  background: white;
+  background: var(--panel);
+  border: 1px solid var(--gold-dark);
   border-radius: 12px;
   height: 140px;
   overflow-y: auto;
   padding: 8px;
   font-size: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
 }
 
-.chat-box .chat-line { margin-bottom: 4px; }
-.chat-box .chat-name { font-weight: 800; color: var(--felt-dark); }
+.chat-box .chat-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.chat-box .chat-line .pixel-avatar { flex-shrink: 0; width: 18px; height: 18px; border-radius: 4px; }
+.chat-box .chat-name { font-weight: 800; color: var(--gold); }
+.chat-box .chat-text { color: var(--ink); word-break: break-word; }
+
+.emoji-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  background: var(--panel);
+  border: 1px solid var(--gold-dark);
+  border-radius: 10px;
+  padding: 4px;
+  margin-top: 6px;
+  max-height: 66px;
+  overflow-y: auto;
+}
+
+.emoji-bar button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  padding: 3px;
+  cursor: pointer;
+  border-radius: 6px;
+  line-height: 1;
+}
+.emoji-bar button:hover { background: rgba(212, 175, 55, 0.2); }
 
 .chat-input-row {
   display: flex;
@@ -391,7 +557,9 @@ h1, h2 {
   flex: 1;
   padding: 8px 10px;
   border-radius: 10px;
-  border: 2px solid #eee;
+  border: 2px solid var(--gold-dark);
+  background: var(--panel);
+  color: var(--ink);
   font-size: 12px;
 }
 
@@ -400,7 +568,7 @@ h1, h2 {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -408,7 +576,9 @@ h1, h2 {
 }
 
 .modal-card {
-  background: white;
+  background: linear-gradient(180deg, var(--panel-light), var(--panel));
+  border: 2px solid var(--gold-dark);
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.25), 0 16px 40px rgba(0, 0, 0, 0.6);
   border-radius: 20px;
   padding: 28px;
   width: 360px;
@@ -416,7 +586,10 @@ h1, h2 {
   max-height: 80vh;
   overflow-y: auto;
   text-align: center;
+  color: var(--ink);
 }
+
+.modal-card h2 { color: var(--gold); margin-bottom: 6px; }
 
 .leaderboard-list {
   text-align: left;
@@ -427,7 +600,7 @@ h1, h2 {
   display: flex;
   justify-content: space-between;
   padding: 8px 4px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
   font-weight: 700;
 }
 
@@ -450,5 +623,33 @@ h1, h2 {
 .showdown-winners {
   font-family: 'Baloo 2', sans-serif;
   font-weight: 700;
-  color: var(--felt-dark);
+  color: var(--gold);
 }
+
+/* ---------- Lịch sử ván đấu ---------- */
+
+.history-list {
+  text-align: left;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-row {
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+.history-row .history-head {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+
+.history-row .history-winners { color: var(--ink); }
+.history-empty { color: #8c8672; font-size: 13px; }

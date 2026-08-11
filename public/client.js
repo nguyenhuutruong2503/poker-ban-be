@@ -1,12 +1,14 @@
 // client.js - Toàn bộ logic phía trình duyệt: kết nối Socket.io, vẽ bàn chơi,
-// xử lý các nút bấm hành động, chat, và bảng xếp hạng.
+// xử lý các nút bấm hành động, chat, âm thanh, animation, và bảng xếp hạng.
 
 const socket = io();
 
 let mySocketId = null;
 let myName = null;
 let latestState = null;
+let previousState = null;
 let timerInterval = null;
+let dealStagger = 0;
 
 // ---------- Các phần tử DOM hay dùng ----------
 const el = (id) => document.getElementById(id);
@@ -73,6 +75,7 @@ socket.on('connect', () => {
 // ---------- Đăng nhập vào bàn ----------
 
 joinBtn.addEventListener('click', () => {
+  Sound.unlock(); // mở khoá AudioContext ngay từ cử chỉ đầu tiên của người dùng
   const name = nameInput.value.trim();
   const tableId = tableInput.value.trim() || 'ban-1';
   if (!name) {
@@ -104,36 +107,100 @@ function flashMessage(text) {
 // ---------- Vẽ giao diện dựa trên trạng thái mới nhất ----------
 
 function render(state) {
+  const prev = previousState;
+  previousState = state;
+  dealStagger = 0;
+
   el('last-message').textContent = state.lastMessage || '';
-  el('pot-amount').textContent = `Pot: ${state.pot}`;
-  renderCommunityCards(state.communityCards);
-  renderSeats(state);
-  renderMyCards(state);
+
+  const potEl = el('pot-amount');
+  potEl.innerHTML = `<span class="poker-chip" style="width:16px;height:16px;vertical-align:-2px;margin-right:6px;"></span>Pot: ${state.pot}`;
+  if (prev && state.pot > prev.pot) {
+    potEl.classList.remove('pulse');
+    void potEl.offsetWidth; // ép trình duyệt tính lại style để animation chạy lại được
+    potEl.classList.add('pulse');
+  }
+
+  const dealJustHappened = !!prev && prev.stage !== 'preflop' && state.stage === 'preflop';
+
+  renderCommunityCards(state.communityCards, prev ? prev.communityCards.length : 0);
+  renderSeats(state, prev, dealJustHappened);
+  renderMyCards(state, dealJustHappened);
   renderActionBar(state);
   renderStartButton(state);
   renderTimer(state);
+
+  if (prev && prev.currentPlayerId !== mySocketId && state.currentPlayerId === mySocketId && state.stage !== 'waiting') {
+    Sound.playTurnAlert();
+  }
+  if (prev && prev.stage !== 'showdown' && state.stage === 'showdown') {
+    Sound.playWin();
+  }
+  if (prev && prev.lastMessage !== state.lastMessage) {
+    const msg = state.lastMessage || '';
+    if (/check/i.test(msg)) Sound.playAction();
+    else if (/raise|all-in/i.test(msg)) Sound.playRaise();
+  }
 
   if (state.stage === 'showdown' && state.showdownResult) {
     showShowdownModal(state.showdownResult);
   }
 }
 
-function cardEl(card, sizeClass) {
+// Sinh độ trễ (ms) so le cho từng lá bài được chia, đồng thời phát tiếng "tách"
+// tương ứng đúng lúc lá bài đó xuất hiện.
+function nextDealDelay() {
+  const d = dealStagger * 70;
+  dealStagger += 1;
+  setTimeout(() => Sound.playDeal(), d);
+  return d;
+}
+
+function cardEl(card, sizeClass, animate) {
   const div = document.createElement('div');
   if (!card) {
     div.className = `card back ${sizeClass || ''}`;
-    return div;
+  } else {
+    const isRed = card.suit === '♥' || card.suit === '♦';
+    div.className = `card ${isRed ? 'red' : 'black'} ${sizeClass || ''}`;
+    div.textContent = `${card.rank}${card.suit}`;
   }
-  const isRed = card.suit === '♥' || card.suit === '♦';
-  div.className = `card ${isRed ? 'red' : 'black'} ${sizeClass || ''}`;
-  div.textContent = `${card.rank}${card.suit}`;
+  if (animate) {
+    div.classList.add('deal-in');
+    div.style.animationDelay = `${nextDealDelay()}ms`;
+  }
   return div;
 }
 
-function renderCommunityCards(cards) {
+function renderCommunityCards(cards, prevCount) {
   const wrap = el('community-cards');
   wrap.innerHTML = '';
-  cards.forEach((c) => wrap.appendChild(cardEl(c)));
+  cards.forEach((card, i) => {
+    const flip = document.createElement('div');
+    flip.className = 'flip-card';
+    const inner = document.createElement('div');
+    inner.className = 'flip-card-inner';
+    const back = document.createElement('div');
+    back.className = 'flip-card-face back';
+    back.appendChild(cardEl(null));
+    const front = document.createElement('div');
+    front.className = 'flip-card-face front';
+    front.appendChild(cardEl(card));
+    inner.appendChild(back);
+    inner.appendChild(front);
+    flip.appendChild(inner);
+
+    if (i < prevCount) {
+      flip.classList.add('flipped'); // đã lật từ trước, không cần animate lại
+    } else {
+      const delay = 150 + (i - prevCount) * 220;
+      setTimeout(() => {
+        flip.classList.add('flipped');
+        Sound.playFlip();
+      }, delay);
+    }
+    wrap.appendChild(flip);
+  });
 }
 
 // Vị trí các ghế quanh bàn hình oval, xoay sao cho "tôi" luôn ở dưới cùng
@@ -145,7 +212,25 @@ const SEAT_POSITIONS = {
   6: [[50, 90], [10, 68], [18, 18], [82, 18], [90, 68], [50, 10]],
 };
 
-function renderSeats(state) {
+function spawnFlyingChip(seatEl) {
+  const potEl = el('pot-amount');
+  const seatRect = seatEl.getBoundingClientRect();
+  const potRect = potEl.getBoundingClientRect();
+  const chip = document.createElement('div');
+  chip.className = 'flying-chip';
+  chip.style.left = `${seatRect.left + seatRect.width / 2 - 11}px`;
+  chip.style.top = `${seatRect.top + seatRect.height / 2 - 11}px`;
+  document.body.appendChild(chip);
+  requestAnimationFrame(() => {
+    chip.style.left = `${potRect.left + potRect.width / 2 - 11}px`;
+    chip.style.top = `${potRect.top + potRect.height / 2 - 11}px`;
+    chip.style.transform = 'scale(0.6)';
+  });
+  Sound.playChip();
+  setTimeout(() => chip.remove(), 650);
+}
+
+function renderSeats(state, prev, dealJustHappened) {
   const wrap = el('seats');
   wrap.innerHTML = '';
   const players = state.players;
@@ -160,6 +245,7 @@ function renderSeats(state) {
 
     const seat = document.createElement('div');
     seat.className = 'seat';
+    seat.dataset.playerId = p.id;
     if (p.id === state.currentPlayerId) seat.classList.add('active');
     if (p.folded) seat.classList.add('folded');
     seat.style.left = `${x}%`;
@@ -171,6 +257,11 @@ function renderSeats(state) {
       chip.textContent = 'D';
       seat.appendChild(chip);
     }
+
+    const avatarWrap = document.createElement('div');
+    avatarWrap.className = 'seat-avatar-wrap';
+    avatarWrap.innerHTML = avatarSvg(p.name, 40);
+    seat.appendChild(avatarWrap);
 
     const nameTag = document.createElement('div');
     nameTag.className = 'seat-name-tag';
@@ -188,27 +279,37 @@ function renderSeats(state) {
     if (p.currentBet > 0) {
       const bet = document.createElement('div');
       bet.className = 'seat-bet';
-      bet.textContent = `Cược: ${p.currentBet}`;
+      const chipIcon = document.createElement('span');
+      chipIcon.className = 'poker-chip';
+      bet.appendChild(chipIcon);
+      const betText = document.createElement('span');
+      betText.textContent = `${p.currentBet}`;
+      bet.appendChild(betText);
       seat.appendChild(bet);
     }
 
     if (p.id !== mySocketId && state.stage !== 'waiting') {
       const mini = document.createElement('div');
       mini.className = 'mini-cards';
-      (p.hole || []).forEach((c) => mini.appendChild(cardEl(c, 'mini')));
+      (p.hole || []).forEach((c) => mini.appendChild(cardEl(c, 'mini', dealJustHappened)));
       seat.appendChild(mini);
     }
 
     wrap.appendChild(seat);
+
+    const prevPlayer = prev && prev.players.find((pp) => pp.id === p.id);
+    if (prev && prevPlayer && p.currentBet > prevPlayer.currentBet) {
+      spawnFlyingChip(seat);
+    }
   });
 }
 
-function renderMyCards(state) {
+function renderMyCards(state, animate) {
   const wrap = el('my-cards');
   wrap.innerHTML = '';
   const me = state.players.find((p) => p.id === mySocketId);
   if (!me || !me.hole || me.hole.filter(Boolean).length === 0) return;
-  me.hole.forEach((c) => wrap.appendChild(cardEl(c)));
+  me.hole.forEach((c) => wrap.appendChild(cardEl(c, null, animate)));
 }
 
 function renderActionBar(state) {
@@ -282,9 +383,9 @@ function showShowdownModal(result) {
       row.className = 'showdown-hand-row';
       const cardsHtml = h.cards.map((c) => {
         const isRed = c.suit === '♥' || c.suit === '♦';
-        return `<span style="color:${isRed ? '#FF5C5C' : '#2A2A2E'}">${c.rank}${c.suit}</span>`;
+        return `<span style="color:${isRed ? '#FF5C5C' : '#f2e9d8'}">${c.rank}${c.suit}</span>`;
       }).join(' ');
-      row.innerHTML = `<strong>${h.name}</strong>: ${cardsHtml} — ${h.hand}`;
+      row.innerHTML = `<strong>${escapeHtml(h.name)}</strong>: ${cardsHtml} — ${escapeHtml(h.hand)}`;
       handsWrap.appendChild(row);
     });
   }
@@ -299,13 +400,39 @@ function showShowdownModal(result) {
   setTimeout(() => modal.classList.add('hidden'), 4800);
 }
 
-// ---------- Chat ----------
+// ---------- Chat + emoji ----------
+
+const EMOJI_LIST = ['😂', '😮', '😎', '🔥', '👍', '👎', '💰', '🃏', '♠️', '♥️', '♦️', '♣️', '🎉', '😭', '🤔', '😤', '🙏', '💸', '🏆', '🤝'];
+
+function initEmojiBar() {
+  const bar = el('emoji-bar');
+  EMOJI_LIST.forEach((emoji) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = emoji;
+    btn.addEventListener('click', () => {
+      const input = el('chat-input');
+      input.value += emoji;
+      input.focus();
+    });
+    bar.appendChild(btn);
+  });
+}
+initEmojiBar();
 
 socket.on('chat-message', ({ name, text }) => {
   const box = el('chat-box');
   const line = document.createElement('div');
   line.className = 'chat-line';
-  line.innerHTML = `<span class="chat-name">${escapeHtml(name)}:</span> ${escapeHtml(text)}`;
+
+  const avatarWrap = document.createElement('div');
+  avatarWrap.innerHTML = avatarSvg(name, 18);
+  line.appendChild(avatarWrap);
+
+  const textWrap = document.createElement('div');
+  textWrap.innerHTML = `<span class="chat-name">${escapeHtml(name)}:</span> <span class="chat-text">${escapeHtml(text)}</span>`;
+  line.appendChild(textWrap);
+
   box.appendChild(line);
   box.scrollTop = box.scrollHeight;
 });
@@ -328,6 +455,49 @@ function sendChat() {
   socket.emit('chat-message', text);
   input.value = '';
 }
+
+// ---------- Âm thanh ----------
+
+const soundToggleBtn = el('sound-toggle-btn');
+function updateSoundBtn() {
+  soundToggleBtn.textContent = Sound.isMuted() ? '🔇' : '🔊';
+}
+updateSoundBtn();
+soundToggleBtn.addEventListener('click', () => {
+  Sound.setMuted(!Sound.isMuted());
+  updateSoundBtn();
+});
+
+// ---------- Lịch sử ván đấu ----------
+
+function openHistory() {
+  const wrap = el('history-list');
+  wrap.innerHTML = '';
+  const list = (latestState && latestState.handHistory) || [];
+  if (list.length === 0) {
+    wrap.innerHTML = '<p class="history-empty">Chưa có ván nào kết thúc.</p>';
+  }
+  list.forEach((h) => {
+    const row = document.createElement('div');
+    row.className = 'history-row';
+    const time = new Date(h.at).toLocaleTimeString('vi-VN');
+    const winnersText = h.winners
+      .map((w) => `${escapeHtml(w.name)} +${w.amount}${w.hand ? ' (' + escapeHtml(w.hand) + ')' : ''}`)
+      .join(', ');
+    row.innerHTML = `
+      <div class="history-head"><span>Ván ${h.handNumber}</span><span>${time}</span></div>
+      <div class="history-winners">🏆 ${winnersText}</div>
+      <div class="history-pot">Pot: ${h.pot}</div>
+    `;
+    wrap.appendChild(row);
+  });
+  el('history-modal').classList.remove('hidden');
+}
+
+el('history-btn').addEventListener('click', openHistory);
+el('history-close-btn').addEventListener('click', () => {
+  el('history-modal').classList.add('hidden');
+});
 
 // ---------- Bảng xếp hạng ----------
 

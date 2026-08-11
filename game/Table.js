@@ -25,6 +25,7 @@ class Table {
     this.handNumber = 0;
     this.lastMessage = '';
     this.showdownResult = null; // dùng để hiển thị kết quả ở cuối ván
+    this.handHistory = []; // lịch sử các ván gần nhất, xem recordHistory()
     this.turnTimer = null;
     this.turnDeadline = null;
     this.pendingRemovals = new Map(); // tên (viết thường) -> timer dọn dẹp người mất kết nối
@@ -392,13 +393,27 @@ class Table {
 
   // ---------- Kết thúc ván: chia pot ----------
 
+  // Ghi lại 1 ván vào lịch sử (tối đa 20 ván gần nhất) để hiển thị ở popup "Lịch sử"
+  recordHistory(entry) {
+    this.handHistory.unshift(entry);
+    if (this.handHistory.length > 20) this.handHistory.length = 20;
+  }
+
   awardPotToSingleWinner(winner) {
+    const potWon = this.pot;
     winner.chips += this.pot;
     this.showdownResult = {
       winners: [{ name: winner.name, amount: this.pot, hand: null }],
       revealAll: false,
     };
     this.lastMessage = `${winner.name} thắng ${this.pot} chip (mọi người khác đã úp bài).`;
+    this.recordHistory({
+      handNumber: this.handNumber,
+      at: Date.now(),
+      pot: potWon,
+      winners: [{ name: winner.name, amount: potWon, hand: null }],
+      stage: 'fold',
+    });
     this.pot = 0;
     this.stage = 'showdown';
     this.clearTurnTimer();
@@ -471,6 +486,13 @@ class Table {
       hands: contenders.map((p) => ({ name: p.name, cards: p.hole, hand: handResults[p.id].name })),
     };
     this.lastMessage = 'Ngửa bài!';
+    this.recordHistory({
+      handNumber: this.handNumber,
+      at: Date.now(),
+      pot: this.pot,
+      winners: Object.values(winnersSummary),
+      stage: 'showdown',
+    });
     this.pot = 0;
     this.stage = 'showdown';
     setTimeout(() => this.resetForNextHand(), 5000);
@@ -543,6 +565,7 @@ class Table {
       turnSeconds: this.turnSeconds,
       lastMessage: this.lastMessage,
       showdownResult: this.showdownResult,
+      handHistory: this.handHistory,
       smallBlind: this.smallBlind,
       bigBlind: this.bigBlind,
       players: this.players.map((p) => ({

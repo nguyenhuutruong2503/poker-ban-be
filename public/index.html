@@ -29,6 +29,8 @@
     <div class="topbar">
       <span id="table-label" class="table-label"></span>
       <span id="last-message" class="last-message"></span>
+      <button id="sound-toggle-btn" class="btn-ghost small" title="Bật/tắt âm thanh">🔊</button>
+      <button id="history-btn" class="btn-ghost small" title="Lịch sử ván đấu">📜</button>
       <button id="leaderboard-btn" class="btn-ghost small">🏆</button>
     </div>
 
@@ -62,6 +64,7 @@
 
     <div class="side-panel">
       <div id="chat-box" class="chat-box"></div>
+      <div id="emoji-bar" class="emoji-bar"></div>
       <div class="chat-input-row">
         <input id="chat-input" type="text" placeholder="Nhắn gì đó..." maxlength="200" />
         <button id="chat-send-btn" class="btn-ghost small">Gửi</button>
@@ -87,7 +90,18 @@
     </div>
   </div>
 
+  <!-- Popup lịch sử ván đấu -->
+  <div id="history-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h2>📜 Lịch sử ván đấu</h2>
+      <div id="history-list" class="history-list"></div>
+      <button id="history-close-btn" class="btn-primary">Đóng</button>
+    </div>
+  </div>
+
   <script src="/socket.io/socket.io.js"></script>
+  <script src="avatar.js"></script>
+  <script src="sound.js"></script>
   <script src="client.js"></script>
 </body>
 </html>
