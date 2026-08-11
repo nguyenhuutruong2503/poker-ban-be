@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Poker Bạn Bè 🃏</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Màn hình đăng nhập -->
+  <div id="login-screen" class="screen">
+    <div class="login-card">
+      <h1>🃏 Poker Bạn Bè</h1>
+      <p class="subtitle">Texas Hold'em real-time cho hội bạn thân</p>
+      <label>Tên của bạn</label>
+      <input id="name-input" type="text" placeholder="Ví dụ: Minh Tít" maxlength="20" />
+      <label>Mã bàn chơi</label>
+      <input id="table-input" type="text" placeholder="Ví dụ: ban-cua-tui" maxlength="30" />
+      <p class="hint">Ai nhập cùng mã bàn sẽ ngồi chung bàn với nhau.</p>
+      <button id="join-btn" class="btn-primary">Vào bàn</button>
+      <p id="login-error" class="error-text"></p>
+      <button id="leaderboard-open-btn" class="btn-ghost">🏆 Xem bảng xếp hạng</button>
+    </div>
+  </div>
+
+  <!-- Màn hình bàn chơi -->
+  <div id="game-screen" class="screen hidden">
+    <div class="topbar">
+      <span id="table-label" class="table-label"></span>
+      <span id="last-message" class="last-message"></span>
+      <button id="leaderboard-btn" class="btn-ghost small">🏆</button>
+    </div>
+
+    <div class="table-wrap">
+      <div id="poker-table" class="poker-table">
+        <div class="pot-area">
+          <div id="pot-amount" class="pot-amount">Pot: 0</div>
+          <div id="community-cards" class="community-cards"></div>
+        </div>
+        <div id="seats" class="seats"></div>
+      </div>
+    </div>
+
+    <div class="my-area">
+      <div id="my-cards" class="my-cards"></div>
+      <div id="timer-bar-wrap" class="timer-bar-wrap hidden">
+        <div id="timer-bar" class="timer-bar"></div>
+      </div>
+      <div id="action-bar" class="action-bar hidden">
+        <button id="fold-btn" class="btn-action btn-fold">Úp bài</button>
+        <button id="check-btn" class="btn-action btn-check">Check</button>
+        <button id="call-btn" class="btn-action btn-call">Theo</button>
+        <div class="raise-group">
+          <input id="raise-input" type="number" class="raise-input" />
+          <button id="raise-btn" class="btn-action btn-raise">Raise</button>
+        </div>
+        <button id="allin-btn" class="btn-action btn-allin">All-in</button>
+      </div>
+      <button id="start-hand-btn" class="btn-primary hidden">Bắt đầu ván mới</button>
+    </div>
+
+    <div class="side-panel">
+      <div id="chat-box" class="chat-box"></div>
+      <div class="chat-input-row">
+        <input id="chat-input" type="text" placeholder="Nhắn gì đó..." maxlength="200" />
+        <button id="chat-send-btn" class="btn-ghost small">Gửi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup bảng xếp hạng -->
+  <div id="leaderboard-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h2>🏆 Bảng xếp hạng bạn bè</h2>
+      <div id="leaderboard-list" class="leaderboard-list"></div>
+      <button id="leaderboard-close-btn" class="btn-primary">Đóng</button>
+    </div>
+  </div>
+
+  <!-- Popup kết quả ván (showdown) -->
+  <div id="showdown-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h2 id="showdown-title">Kết quả ván bài</h2>
+      <div id="showdown-hands" class="showdown-hands"></div>
+      <div id="showdown-winners" class="showdown-winners"></div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>

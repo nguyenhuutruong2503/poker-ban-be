@@ -1,0 +1,454 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;800&family=Nunito:wght@400;600;700&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FFF3E0;
+  --felt: #1FA37E;
+  --felt-dark: #158066;
+  --accent-pink: #FF5C8A;
+  --accent-yellow: #FFC93C;
+  --accent-blue: #3D9BFF;
+  --accent-purple: #9B5DE5;
+  --ink: #2A2A2E;
+  --card-white: #FFFDF8;
+  --danger: #FF5C5C;
+  --success: #34C77B;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+.hidden { display: none !important; }
+
+h1, h2 {
+  font-family: 'Baloo 2', sans-serif;
+}
+
+/* ---------- Màn hình đăng nhập ---------- */
+
+#login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at top, #FFE8B8, var(--bg));
+}
+
+.login-card {
+  background: var(--card-white);
+  border-radius: 24px;
+  padding: 36px 32px;
+  width: 360px;
+  max-width: 90vw;
+  box-shadow: 0 12px 0 var(--accent-yellow), 0 12px 30px rgba(0,0,0,0.15);
+  text-align: center;
+}
+
+.login-card h1 {
+  font-size: 28px;
+  color: var(--felt-dark);
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: #6b6b6b;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.login-card label {
+  display: block;
+  text-align: left;
+  font-weight: 700;
+  font-size: 13px;
+  margin: 12px 0 6px;
+  color: var(--felt-dark);
+}
+
+.login-card input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 2px solid #FFE0A3;
+  font-size: 15px;
+  font-family: 'Nunito', sans-serif;
+  outline: none;
+}
+
+.login-card input:focus {
+  border-color: var(--accent-pink);
+}
+
+.hint {
+  font-size: 12px;
+  color: #999;
+  margin-top: 6px;
+  text-align: left;
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 13px;
+  min-height: 18px;
+  margin-top: 8px;
+}
+
+.btn-primary {
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px;
+  border: none;
+  border-radius: 16px;
+  background: var(--accent-pink);
+  color: white;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #C93D66;
+  transition: transform 0.08s ease;
+}
+.btn-primary:active { transform: translateY(3px); box-shadow: 0 2px 0 #C93D66; }
+
+.btn-ghost {
+  margin-top: 12px;
+  background: none;
+  border: 2px solid var(--felt);
+  color: var(--felt-dark);
+  padding: 10px 16px;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+}
+.btn-ghost.small { padding: 6px 12px; font-size: 13px; margin-top: 0; }
+
+/* ---------- Màn hình bàn chơi ---------- */
+
+#game-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px 24px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.table-label {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  color: var(--felt-dark);
+}
+
+.last-message {
+  font-size: 13px;
+  color: #6b6b6b;
+  flex: 1;
+  text-align: center;
+}
+
+.table-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.poker-table {
+  position: relative;
+  width: min(700px, 92vw);
+  height: min(400px, 60vw);
+  background: radial-gradient(ellipse at center, var(--felt), var(--felt-dark));
+  border-radius: 200px;
+  border: 10px solid #7A4A21;
+  box-shadow: 0 10px 0 #5C3616, inset 0 0 40px rgba(0,0,0,0.25);
+}
+
+.pot-area {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+}
+
+.pot-amount {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  background: rgba(0,0,0,0.25);
+  padding: 6px 16px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.community-cards {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.seats {
+  position: absolute;
+  inset: 0;
+}
+
+.seat {
+  position: absolute;
+  width: 130px;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.seat-name-tag {
+  background: white;
+  border-radius: 14px;
+  padding: 4px 10px;
+  font-weight: 700;
+  font-size: 13px;
+  display: inline-block;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.15);
+}
+
+.seat.active .seat-name-tag {
+  background: var(--accent-yellow);
+  box-shadow: 0 0 0 3px white, 0 3px 0 rgba(0,0,0,0.15);
+}
+
+.seat.folded .seat-name-tag { opacity: 0.4; }
+
+.seat-chips {
+  font-size: 12px;
+  color: white;
+  font-weight: 700;
+  margin-top: 2px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.seat-bet {
+  font-size: 11px;
+  background: var(--accent-blue);
+  color: white;
+  border-radius: 10px;
+  padding: 1px 8px;
+  display: inline-block;
+  margin-top: 3px;
+}
+
+.dealer-chip {
+  position: absolute;
+  top: -8px; right: -4px;
+  background: white;
+  border: 2px solid var(--accent-purple);
+  color: var(--accent-purple);
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 50%;
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.mini-cards {
+  display: flex;
+  gap: 3px;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+/* ---------- Lá bài ---------- */
+
+.card {
+  width: 40px;
+  height: 56px;
+  background: var(--card-white);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+}
+
+.card.mini { width: 24px; height: 34px; font-size: 10px; border-radius: 4px; }
+
+.card.red { color: var(--danger); }
+.card.black { color: var(--ink); }
+
+.card.back {
+  background: repeating-linear-gradient(45deg, var(--accent-purple), var(--accent-purple) 4px, #7A3FC2 4px, #7A3FC2 8px);
+}
+
+/* ---------- Vùng bài của bản thân + hành động ---------- */
+
+.my-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.my-cards {
+  display: flex;
+  gap: 8px;
+}
+
+.my-cards .card { width: 56px; height: 78px; font-size: 20px; }
+
+.timer-bar-wrap {
+  width: min(400px, 90vw);
+  height: 8px;
+  background: #eee;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.timer-bar {
+  height: 100%;
+  background: var(--accent-yellow);
+  width: 100%;
+  transition: width 0.2s linear;
+}
+
+.action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-action {
+  border: none;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+}
+.btn-action:active { transform: translateY(3px); box-shadow: none; }
+
+.btn-fold { background: var(--danger); }
+.btn-check { background: var(--accent-blue); }
+.btn-call { background: var(--success); }
+.btn-raise { background: var(--accent-pink); }
+.btn-allin { background: var(--accent-purple); }
+
+.raise-group {
+  display: flex;
+  gap: 6px;
+}
+
+.raise-input {
+  width: 90px;
+  border-radius: 12px;
+  border: 2px solid #ddd;
+  padding: 0 10px;
+  font-size: 14px;
+}
+
+/* ---------- Chat ---------- */
+
+.side-panel {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  width: 260px;
+  max-width: 80vw;
+}
+
+.chat-box {
+  background: white;
+  border-radius: 12px;
+  height: 140px;
+  overflow-y: auto;
+  padding: 8px;
+  font-size: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.chat-box .chat-line { margin-bottom: 4px; }
+.chat-box .chat-name { font-weight: 800; color: var(--felt-dark); }
+
+.chat-input-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.chat-input-row input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 2px solid #eee;
+  font-size: 12px;
+}
+
+/* ---------- Modal (popup) ---------- */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal-card {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  width: 360px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  text-align: center;
+}
+
+.leaderboard-list {
+  text-align: left;
+  margin: 16px 0;
+}
+
+.leaderboard-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 4px;
+  border-bottom: 1px solid #f0f0f0;
+  font-weight: 700;
+}
+
+.leaderboard-row .positive { color: var(--success); }
+.leaderboard-row .negative { color: var(--danger); }
+
+.showdown-hands {
+  text-align: left;
+  margin: 14px 0;
+}
+
+.showdown-hand-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.showdown-winners {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  color: var(--felt-dark);
+}
